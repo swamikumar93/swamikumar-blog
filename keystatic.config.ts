@@ -1,16 +1,13 @@
 import { collection, config, fields } from '@keystatic/core';
 
-export default config({
-	storage:
-		process.env.NODE_ENV === 'production'
-			? {
-					kind: 'github',
-					repo: {
-						owner: 'swamikumar93',
-						name: 'swamikumar-blog',
-					},
-				}
-			: { kind: 'local' },
+const baseConfig = config({
+	storage: {
+		kind: 'github',
+		repo: {
+			owner: 'swamikumar93',
+			name: 'swamikumar-blog',
+		},
+	},
 
 	collections: {
 		blog: collection({
@@ -36,3 +33,12 @@ export default config({
 		}),
 	},
 });
+
+// Spread process.env credentials so they are read at runtime
+// (import.meta.env is replaced at build time and may be undefined for secrets)
+export default {
+	...baseConfig,
+	clientId: process.env.KEYSTATIC_GITHUB_CLIENT_ID,
+	clientSecret: process.env.KEYSTATIC_GITHUB_CLIENT_SECRET,
+	secret: process.env.KEYSTATIC_SECRET,
+};
